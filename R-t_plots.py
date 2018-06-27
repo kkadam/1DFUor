@@ -137,6 +137,11 @@ cbar4=plt.colorbar(ima4, orientation='vertical')
 cbar4.set_label('Q')
 plt.clim(0,40)
 
+# Save and show the plot
+fig = matplotlib.pyplot.gcf()
+fig.set_size_inches(10, 14)
+savefig(outdir+'/R-t.png', bbox_inches='tight')
+
 plt.show()
 
 
