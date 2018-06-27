@@ -5,7 +5,7 @@
 from numpy import *
 from pylab import *
 #import sys 
-#import os
+import os
 import glob 
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import LogFormatterMathtext
@@ -14,58 +14,82 @@ from matplotlib.ticker import LogFormatterMathtext
 # Initialization
 #----------------------------------------------------------------------------
 
-tmin = 0
-tmax = 0.9
+tmin = 0.275
+tmax = 0.325
 Rmin = 0.02
-Rmax = 40
-autorange = 0
-logscaleR = 1
+Rmax = 5
+autorange = 1    # 1 => whole dataset range, 0 => ranges spacified above
+logscaleR = 0    # 1 => logscale for R direction
+reread = 0       # 1 => loading from the saved data in COLORED directory
+                 # 0 => has to reorganize the simulation files before plotting
+outdir = "COLORED"
 
+if (reread == 0):
 # Get input file names
-fileslist = glob.glob('a*.txt')
-fileslist.sort()
-infiles = np.hstack(fileslist)
+    fileslist = glob.glob('a*.txt')
+    fileslist.sort()
+    infiles = np.hstack(fileslist)
 
-nt = infiles.size
+    nt = infiles.size
+
+# Make output directory
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
 
 # Get the radial array
-fileData = np.loadtxt(fileslist[0])
-radius = fileData[:,1]
+    fileData = np.loadtxt(fileslist[0])
+    radius = fileData[:,1]
 
-nR = radius.size
+    nR = radius.size
 
-# Make Sigma array
-sigma = np.empty([nR,nt])
-Tc = np.empty([nR,nt])
-nu = np.empty([nR,nt])
-Q = np.empty([nR,nt])
+# Initialize arrays
+    sigma = np.empty([nR,nt])
+    Tc = np.empty([nR,nt])
+    nu = np.empty([nR,nt])
+    Q = np.empty([nR,nt])
+    time = np.empty([nt])
 
-i=0
-for filename in infiles:
-    with open(filename) as f:
-        firstline = f.readline()
-#    print (firstline) Need to obtain the exact time from this line
-    fileData = np.loadtxt(filename)
-    sigma[:,i] = fileData[:,2]
-    Tc[:,i] = fileData[:,3]
-    nu[:,i] = fileData[:,7]
-    Q[:,i] = fileData[:,8]
-    i=i+1
+# Make Sigma, Tc, nu, Q arrays
+    i=0
+    for filename in infiles:
+        with open(filename) as f:
+            firstline = f.readline()
+            time[i] = float(firstline[15:24]) 
+        fileData = np.loadtxt(filename)
+        sigma[:,i] = fileData[:,2]
+        Tc[:,i] = fileData[:,3]
+        nu[:,i] = fileData[:,7]
+        Q[:,i] = fileData[:,8]
+        i=i+1
 
-#print (nR, nt)
-#print (sigma)
-R=radius
-t=arange(0,nt*500/1.0e6,500/1e6)
-#print  ( x.min(), x.max(), y.min(), y.max())
-
-print (R.size, t.size, sigma.size)
+    R=radius
 
 
+# Save arrays in files for future use 
+    np.savetxt(outdir+'/sigma', sigma, fmt='%d')
+    np.savetxt(outdir+'/Tc', Tc, fmt='%d')
+    np.savetxt(outdir+'/nu', nu, fmt='%d')
+    np.savetxt(outdir+'/Q', Q, fmt='%d')
+    np.savetxt(outdir+'/R', R, fmt='%d')
+    np.savetxt(outdir+'/time', time, fmt='%d')
 
+elif (reread == 1):
+
+    sigma = np.loadtxt(outdir+'/sigma')
+    Tc = np.loadtxt(outdir+'/Tc')
+    nu = np.loadtxt(outdir+'/nu')
+    Q = np.loadtxt(outdir+'/Q')
+    R = np.loadtxt(outdir+'/R')
+    time = np.loadtxt(outdir+'/time')
 
 #----------------------------------------------------------------------------
 # Make plots
 #----------------------------------------------------------------------------
+#print  ( x.min(), x.max(), y.min(), y.max())
+#print (R.size, t.size, sigma.size)
+
+
+t=time
 
 # 1.Sigma
 plt.subplot(4,1,1)
