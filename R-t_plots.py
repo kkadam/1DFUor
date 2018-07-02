@@ -62,16 +62,16 @@ if (reread == 0):
         Q[:,i] = fileData[:,8]
         i=i+1
 
-    R=radius
+#    R=radius
 
 
 # Save arrays in files for future use 
-    np.savetxt(outdir+'/sigma', sigma, fmt='%d')
-    np.savetxt(outdir+'/Tc', Tc, fmt='%d')
-    np.savetxt(outdir+'/nu', nu, fmt='%d')
-    np.savetxt(outdir+'/Q', Q, fmt='%d')
-    np.savetxt(outdir+'/R', R, fmt='%d')
-    np.savetxt(outdir+'/time', time, fmt='%d')
+    np.savetxt(outdir+'/sigma', sigma, fmt='%1.6f')
+    np.savetxt(outdir+'/Tc', Tc, fmt='%1.6f')
+    np.savetxt(outdir+'/nu', nu, fmt='%1.6f')
+    np.savetxt(outdir+'/Q', Q, fmt='%1.6f')
+    np.savetxt(outdir+'/R', radius, fmt='%1.6f')
+    np.savetxt(outdir+'/time', time, fmt='%1.6f')
 
 elif (reread == 1):
 
@@ -79,7 +79,7 @@ elif (reread == 1):
     Tc = np.loadtxt(outdir+'/Tc')
     nu = np.loadtxt(outdir+'/nu')
     Q = np.loadtxt(outdir+'/Q')
-    R = np.loadtxt(outdir+'/R')
+    radius = np.loadtxt(outdir+'/R')
     time = np.loadtxt(outdir+'/time')
 
 #----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ t=time
 
 # 1.Sigma
 plt.subplot(4,1,1)
-ima1 = plt.pcolor(t,R,sigma, cmap='magma', norm=LogNorm())
+ima1 = plt.pcolor(t,radius,sigma, cmap='magma', norm=LogNorm())
 if (autorange==0):
     axis([tmin,tmax,Rmin,Rmax])
 if (logscaleR==1):
@@ -105,7 +105,7 @@ plt.clim(100,5e4)
 
 # 2.Tc
 plt.subplot(4,1,2)
-ima2 = plt.pcolor(t,R, Tc, cmap='magma')
+ima2 = plt.pcolor(t,radius, Tc, cmap='magma')
 if (autorange==0):
     axis([tmin,tmax,Rmin,Rmax])
 if (logscaleR==1):
@@ -117,7 +117,7 @@ plt.clim(150,2000)
 
 # 3.nu
 plt.subplot(4,1,3)
-ima3 = plt.pcolor(t,R,nu, cmap='magma', norm=LogNorm())
+ima3 = plt.pcolor(t,radius,nu, cmap='magma', norm=LogNorm())
 if (autorange==0):
     axis([tmin,tmax,Rmin,Rmax])
 if (logscaleR==1):
@@ -128,7 +128,7 @@ cbar3.set_label('nu')
 
 # 3.Q
 plt.subplot(4,1,4)
-ima4 = plt.pcolor(t,R,Q, cmap='magma')
+ima4 = plt.pcolor(t,radius,Q, cmap='magma')
 if (autorange==0):
     axis([tmin,tmax,Rmin,Rmax])
 if (logscaleR==1):
